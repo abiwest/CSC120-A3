@@ -42,7 +42,7 @@ class Conversation implements Chatbot {
    * Prints transcript of conversation
    */
   public void printTranscript() {
-    System.out.println("Conversation Transcript:");
+    System.out.println("Conversation Transcript: \nWhat's on your mind?");
     System.out.println(transcript);
   }
 
@@ -67,18 +67,19 @@ class Conversation implements Chatbot {
       } else if (words.get(i).equalsIgnoreCase("your")) {
         words.set(i, "my");
       } else if (words.get(i).equalsIgnoreCase("I'm")) {
-        words.set(i, "you're");
+        words.set(i, "you're"); }
     }
 
     String response = String.join(" ", words);
     if (!response.equals(inputString)) {
-      return response;
+      return response + "?";
     }
     Random random = new Random();
     String[] responses = {"Uh-huh", "How interesting", "Really?", "Hmm..."};
     int randomIndex = random.nextInt(responses.length);
     return responses[randomIndex];
-  }
+    }
+  
 
   public static void main(String[] arguments) {
 
