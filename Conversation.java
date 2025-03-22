@@ -47,11 +47,18 @@ class Conversation implements Chatbot {
   }
 
   /**
-   * Gives appropriate response (mirrored or canned) to user input
+   * Gives appropriate response (mirrored or canned) to user input, deals with punctuation at the end of a sentence
    * @param inputString the users last line of input
    * @return mirrored or canned response to user input  
    */
   public String respond(String inputString) {
+    String punctuation = "";
+
+    if (inputString.endsWith("!") || inputString.endsWith("?") || inputString.endsWith(".")) {
+      punctuation = inputString.substring(inputString.length() -1);
+      inputString = inputString.substring(0, inputString.length() -1);
+    }
+
     List<String> words = Arrays.asList(inputString.split(" "));
     for (int i = 0; i < words.size(); i++) {
       if (words.get(i).equalsIgnoreCase("i")) {
@@ -60,20 +67,28 @@ class Conversation implements Chatbot {
         words.set(i, "you");
       } else if (words.get(i).equalsIgnoreCase("am")) {
         words.set(i, "are");
+      } else if (words.get(i).equalsIgnoreCase("are")) {
+        words.set(i, "am");
       } else if (words.get(i).equalsIgnoreCase("you")) {
         words.set(i, "I");
+      } else if (words.get(i).equalsIgnoreCase("I")) {
+        words.set(i, "you");
       } else if (words.get(i).equalsIgnoreCase("my")) {
         words.set(i, "your");
       } else if (words.get(i).equalsIgnoreCase("your")) {
         words.set(i, "my");
       } else if (words.get(i).equalsIgnoreCase("I'm")) {
-        words.set(i, "you're"); }
+        words.set(i, "you're");
+      }
     }
 
     String response = String.join(" ", words);
+    response += punctuation;
+
     if (!response.equals(inputString)) {
-      return response + "?";
+      return response;
     }
+
     Random random = new Random();
     String[] responses = {"Uh-huh", "How interesting", "Really?", "Hmm..."};
     int randomIndex = random.nextInt(responses.length);
