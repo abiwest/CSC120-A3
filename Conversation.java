@@ -2,11 +2,13 @@ import java.util.Scanner;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 class Conversation implements Chatbot {
 
   // Attributes 
-  private String transcript = "";
+  private List<String> transcript = new ArrayList<>();
+  private static final String [] random_responses = {"Uh-huh", "How interesting", "Really?", "Hmm..."};
 
   /**
    * Constructor 
@@ -28,14 +30,15 @@ class Conversation implements Chatbot {
 
     for(int i = 0; i < rounds; i++) {
       String userInput = input.nextLine();
-      transcript = transcript + userInput + "\n";
+      transcript.add(userInput);
 
-      transcript = transcript + respond(userInput) + "\n";
-      System.out.println(respond(userInput));
+      String reply = respond(userInput);
+      transcript.add(reply);
+      System.out.println(reply);
     }
 
-    transcript = transcript + "Bye! Thanks for chatting!";
-    System.out.println("Bye! Thanks for chatting!\n");
+    transcript.add("Bye! Thanks for chatting!!!");
+    System.out.println("Bye! Thanks for chatting!!!\n");
   }
 
   /**
@@ -43,7 +46,9 @@ class Conversation implements Chatbot {
    */
   public void printTranscript() {
     System.out.println("Conversation Transcript: \nWhat's on your mind?");
-    System.out.println(transcript);
+    for (String s : transcript) {
+      System.out.println(s);
+    }
   }
 
   /**
@@ -59,41 +64,54 @@ class Conversation implements Chatbot {
       inputString = inputString.substring(0, inputString.length() -1);
     }
 
-    List<String> words = Arrays.asList(inputString.split(" "));
+    List<String> words = new ArrayList<>(Arrays.asList(inputString.split(" "))); // I had to use stack exchange here to figure out the array list
+    boolean mirrored = false; // so that we can tell if we used a mirror response or not
+
     for (int i = 0; i < words.size(); i++) {
-      if (words.get(i).equalsIgnoreCase("i")) {
+
+      String word = words.get(i);
+      String lower = word.toLowerCase();
+
+      if (lower.equals("i")) {
         words.set(i, "you");
-      } else if (words.get(i).equalsIgnoreCase("me")) {
+        mirrored = true;
+      } else if (lower.equals("me")) {
         words.set(i, "you");
-      } else if (words.get(i).equalsIgnoreCase("am")) {
+        mirrored = true;
+      } else if (lower.equals("am")) {
         words.set(i, "are");
-      } else if (words.get(i).equalsIgnoreCase("are")) {
+        mirrored = true;
+      } else if (lower.equals("are")) {
         words.set(i, "am");
-      } else if (words.get(i).equalsIgnoreCase("you")) {
+        mirrored = true;
+      } else if (lower.equals("you")) {
         words.set(i, "I");
-      } else if (words.get(i).equalsIgnoreCase("I")) {
-        words.set(i, "you");
-      } else if (words.get(i).equalsIgnoreCase("my")) {
+        mirrored = true;
+      } else if (lower.equals("my")) {
         words.set(i, "your");
-      } else if (words.get(i).equalsIgnoreCase("your")) {
+        mirrored = true;
+      } else if (lower.equals("your")) {
         words.set(i, "my");
-      } else if (words.get(i).equalsIgnoreCase("I'm")) {
+        mirrored = true;
+      } else if (lower.equals("i'm")) {
         words.set(i, "you're");
+        mirrored = true;
+      } else if (lower.equals("you're")) {
+        words.set(i, "i'm");
+        mirrored = true;
       }
     }
 
-    String response = String.join(" ", words);
-    response += punctuation;
+    String response = String.join(" ", words) + punctuation;
 
-    if (!response.equals(inputString)) {
+    if (mirrored) {
       return response;
+    } else {
+      Random random = new Random();
+      int randomIndex = random.nextInt(random_responses.length);
+      return random_responses[randomIndex];
     }
-
-    Random random = new Random();
-    String[] responses = {"Uh-huh", "How interesting", "Really?", "Hmm..."};
-    int randomIndex = random.nextInt(responses.length);
-    return responses[randomIndex];
-    }
+  }
   
 
   public static void main(String[] arguments) {
